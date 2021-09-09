@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="ui.css">
+    </head>
+    <body>
+        <h1>Library</h1>
+        <div class="sub-body">
+            <form id="book-form" onsubmit="addBookToLibrary();return false">
+                <label for="title"></label>
+                <input type="text" id="book-title" name="title" placeholder="Title" required>
+                <label for="author"></label>
+                <input type="text" id="book-author" name="author" placeholder="Author" required>
+                <label for="pages"></label>
+                <input type="number" id="book-pages" name="pages" placeholder="Pages" required>
+                <input type="checkbox" id="book-status" name="status" value="read">
+                <label for="status">Completed</label>
+                <input type="checkbox" id="book-fave" name="fave" value="fave">
+                <label for="fave">Fave</label>
+                <input type="submit" id="add-book-button" value="Add Book">
+            </form>
+            <table id="book-list">
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Pages</th>
+                    <th>Status</th>
+                    <th>Fave</th>
+                    <th></th>
+                </tr>
+                <tr>
+                </tr>
+            </table>
+        </div>
+        <script src="library.js"></script>
+    </body>
+</html>
