@@ -4,9 +4,9 @@
         <link rel="stylesheet" href="ui.css">
     </head>
     <body>
-        <h1>Library</h1>
+        <h1>Library Tracker</h1>
         <div class="sub-body">
-            <form id="book-form" onsubmit="addBookToLibrary();return false">
+            <form id="book-form" onsubmit="return false">
                 <label for="title"></label>
                 <input type="text" id="book-title" name="title" placeholder="Title" required>
                 <label for="author"></label>
@@ -19,6 +19,16 @@
                 <label for="fave">Fave</label>
                 <input type="submit" id="add-book-button" value="Add Book">
             </form>
+            <input type="text" id="myInput" onkeyup="searchBooks()" placeholder="Search by title">
+            <label for="filter">Sort by:</label>
+            <select name="sort-by" id="sort-by">
+                <option value="blank" selected></option>
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+                <option value="pages">Pages</option>
+                <option value="status">Status</option>
+                <option value="fave">Faves</option>
+            </select> 
             <table id="book-list">
                 <tr>
                     <th>Title</th>

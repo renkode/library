@@ -16,29 +16,58 @@ function Book(title, author, pages, status, fave){
     this.fave = fave;
   }
   
-Book.prototype.info = function() {
+/*Book.prototype.info = function() {
       return `${this.title} by ${this.author}, ${this.pages} pages, ${this.status}`;
+}*/
+
+function addBookToLibrary(book) {
+  myLibrary.push(book);
+  createRow(book);
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
-function addBookToLibrary() {
-  let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
-  myLibrary.push(newBook);
-  createRow(newBook);
-  //console.table(myLibrary);
+function populateFromStorage(){
+  var library = JSON.parse(window.localStorage.getItem("library"));
+  for (var book of library) {
+    addBookToLibrary(book);
+  }
 }
 
 let removeBook = function(e) {
-    var book = e.target.parentNode.parentNode;
-    var index = Array.prototype.indexOf.call(bookList.childNodes, book);
-    console.log(index);
-    bookList.removeChild(book);
-    myLibrary.splice(index-2, 1); // -2 because label row count as a child
-    console.table(myLibrary);
+  var books = Array.from(bookList.childNodes);
+  books.shift(); // remove header
+  var bookRow = e.target.parentNode.parentNode;
+  var index = Array.prototype.indexOf.call(books, bookRow);
+  bookList.removeChild(bookRow);
+  myLibrary.splice(index-1, 1);
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+}
+
+let toggleStatus = function(e){
+  var books = Array.from(bookList.childNodes);
+  books.shift(); // remove header
+  var bookRow = e.target.parentNode.parentNode;
+  var index = Array.prototype.indexOf.call(books, bookRow);
+  var book = myLibrary[index-1];
+  book.status = !book.status;
+  e.target.innerHTML = book.status ? "Completed" : "In progress";
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+}
+
+let toggleFave = function(e){
+  var books = Array.from(bookList.childNodes);
+  books.shift();
+  var bookRow = e.target.parentNode.parentNode;
+  var index = Array.prototype.indexOf.call(books, bookRow);
+  var book = myLibrary[index-1];
+  book.fave = !book.fave;
+  e.target.innerHTML = book.fave;
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
 function createRow(book) {
     var newRow = document.createElement("tr");
-    //newRow.classList.add(`${myLibrary.length}`);
+    newRow.classList.add(`${myLibrary.length}`);
 
     var title = document.createElement("td");
     title.innerHTML = book.title;
@@ -52,10 +81,12 @@ function createRow(book) {
     var status = document.createElement("td");
     var statusBtn = document.createElement("BUTTON");
     statusBtn.innerHTML = book.status ? "Completed" : "In progress";
+    statusBtn.addEventListener("click", toggleStatus);
 
     var fave = document.createElement("td");
     var faveBtn = document.createElement("BUTTON");
     faveBtn.innerHTML = book.fave;
+    faveBtn.addEventListener("click", toggleFave);
 
     var remove = document.createElement("td");
     var removeBtn = document.createElement("BUTTON");
@@ -74,4 +105,32 @@ function createRow(book) {
     newRow.lastChild.appendChild(removeBtn);
 }
 
-//addBookBtn.addEventListener("click", addBookToLibrary);
+function filter(names, index, letter) {
+  var filteredNames = names.filter(function(word) {
+     return word.charAt(index) === letter;
+  });
+  return filteredNames;
+}
+
+function searchBooks(){
+  var books = Array.from(bookList.childNodes);
+  books.shift();
+  var input, filter, title;
+  input = document.getElementById('myInput');
+  filter = input.value.toUpperCase();
+  for (i = 1; i < books.length; i++) {
+    title = myLibrary[i-1].title;
+    if (title.toUpperCase().indexOf(filter) > -1) {
+      books[i].style.display = "";
+    } else {
+      books[i].style.display = "none";
+    }
+  }
+}
+
+bookForm.addEventListener("submit", function() {
+  let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
+  addBookToLibrary(newBook);
+});
+
+populateFromStorage();
