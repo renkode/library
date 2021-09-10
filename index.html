@@ -5,7 +5,7 @@
     </head>
     <body>
         <h1>Library Tracker</h1>
-        <div class="sub-body">
+        <div class="container">
             <form id="book-form" onsubmit="return false">
                 <label for="title"></label>
                 <input type="text" id="book-title" name="title" placeholder="Title" required>
@@ -22,8 +22,7 @@
             <input type="text" id="myInput" onkeyup="searchBooks()" placeholder="Search by title">
             <label for="filter">Sort by:</label>
             <select name="sort-by" id="sort-by">
-                <option value="blank" selected></option>
-                <option value="title">Title</option>
+                <option value="title" selected>Title</option>
                 <option value="author">Author</option>
                 <option value="pages">Pages</option>
                 <option value="status">Status</option>

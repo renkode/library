@@ -6,6 +6,7 @@ let bookStatus = document.getElementById("book-status");
 let bookFave = document.getElementById("book-fave");
 let addBookBtn = document.getElementById("add-book-button");
 let bookList = document.getElementById("book-list");
+let sortMenu = document.getElementById("sort-by");
 let myLibrary = [];
 
 function Book(title, author, pages, status, fave){
@@ -35,20 +36,20 @@ function populateFromStorage(){
 
 let removeBook = function(e) {
   var books = Array.from(bookList.childNodes);
-  books.shift(); // remove header
+  books.splice(0,2); // remove header
   var bookRow = e.target.parentNode.parentNode;
   var index = Array.prototype.indexOf.call(books, bookRow);
   bookList.removeChild(bookRow);
-  myLibrary.splice(index-1, 1);
+  myLibrary.splice(index, 1);
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
 let toggleStatus = function(e){
   var books = Array.from(bookList.childNodes);
-  books.shift(); // remove header
+  books.splice(0,2); // remove header
   var bookRow = e.target.parentNode.parentNode;
   var index = Array.prototype.indexOf.call(books, bookRow);
-  var book = myLibrary[index-1];
+  var book = myLibrary[index];
   book.status = !book.status;
   e.target.innerHTML = book.status ? "Completed" : "In progress";
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
@@ -67,7 +68,7 @@ let toggleFave = function(e){
 
 function createRow(book) {
     var newRow = document.createElement("tr");
-    newRow.classList.add(`${myLibrary.length}`);
+    newRow.classList.add(`${myLibrary.length}-1`);
 
     var title = document.createElement("td");
     title.innerHTML = book.title;
@@ -112,14 +113,37 @@ function filter(names, index, letter) {
   return filteredNames;
 }
 
+function sortBy(type) {
+  var types = ["title","author","pages","status","fave"];
+  if (!types.includes(type)) return;
+  var books = Array.from(bookList.childNodes);
+  books.splice(0,2);
+  var sortedBooks = myLibrary.sort(function(a, b) {
+    var indexA = myLibrary.indexOf(a);
+    var indexB = myLibrary.indexOf(b);
+    if (type === "status" || type === "fave") {
+      return myLibrary[indexA][type] < myLibrary[indexB][type] ? 1 : -1;  
+    } else {
+      return myLibrary[indexA][type] > myLibrary[indexB][type] ? 1 : -1;  
+    }
+    });
+  // refresh list
+  myLibrary = sortedBooks;
+  books.forEach(book => bookList.removeChild(book));
+  for (var book of sortedBooks) {
+    createRow(book);
+  }
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+}
+
 function searchBooks(){
   var books = Array.from(bookList.childNodes);
-  books.shift();
+  books.splice(0,2);
   var input, filter, title;
   input = document.getElementById('myInput');
   filter = input.value.toUpperCase();
-  for (i = 1; i < books.length; i++) {
-    title = myLibrary[i-1].title;
+  for (i = 0; i < books.length; i++) {
+    title = myLibrary[i].title;
     if (title.toUpperCase().indexOf(filter) > -1) {
       books[i].style.display = "";
     } else {
@@ -132,5 +156,9 @@ bookForm.addEventListener("submit", function() {
   let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
   addBookToLibrary(newBook);
 });
+
+sortMenu.addEventListener("change",function(e){
+  sortBy(e.target.value);
+})
 
 populateFromStorage();
