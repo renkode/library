@@ -24,11 +24,21 @@ function addBookToLibrary() {
   let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
   myLibrary.push(newBook);
   createRow(newBook);
-  console.table(myLibrary);
+  //console.table(myLibrary);
+}
+
+let removeBook = function(e) {
+    var book = e.target.parentNode.parentNode;
+    var index = Array.prototype.indexOf.call(bookList.childNodes, book);
+    console.log(index);
+    bookList.removeChild(book);
+    myLibrary.splice(index-2, 1); // -2 because label row count as a child
+    console.table(myLibrary);
 }
 
 function createRow(book) {
     var newRow = document.createElement("tr");
+    //newRow.classList.add(`${myLibrary.length}`);
 
     var title = document.createElement("td");
     title.innerHTML = book.title;
@@ -50,6 +60,7 @@ function createRow(book) {
     var remove = document.createElement("td");
     var removeBtn = document.createElement("BUTTON");
     removeBtn.innerHTML = "Remove";
+    removeBtn.addEventListener("click",removeBook);
 
     bookList.appendChild(newRow);
     newRow.appendChild(title);
