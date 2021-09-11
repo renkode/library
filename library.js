@@ -10,7 +10,7 @@ let submitBtn = document.getElementById("add-book-button");
 let bookList = document.getElementById("book-list");
 let sortMenu = document.getElementById("sort-by");
 let newBookBtn = document.getElementById("new-book-button");
-let exitBtn = document.getElementById("exit-window");
+let exitBtn = document.getElementById("exit-button");
 let targetIndex;
 let myLibrary = [];
 
@@ -80,9 +80,17 @@ let toggleFave = function(e){
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
-function removeTransition (e) {
+function removeTransition(e) {
   if (e.propertyName !== 'transform') return; // skip it if it's not a transform
   this.classList.remove('faved');
+}
+
+function disableButton(bool) {
+  var buttons = document.querySelectorAll("button");
+  for (var button of buttons) {
+    if (button.id === "add-book-button" || button.id === "exit-button") continue;
+    bool ? button.disabled = true : button.disabled = false;
+  }
 }
 
 function createRow(book) {
@@ -212,8 +220,9 @@ bookForm.addEventListener("submit", function() {
   } else {
     myLibrary[targetIndex].updateBook(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
     updateRow(targetIndex);
-    bookWindow.style.visibility = "hidden";
   }
+  bookWindow.style.visibility = "hidden";
+  disableButton(false);
 });
 
 sortMenu.addEventListener("change",function(e){
@@ -228,10 +237,12 @@ newBookBtn.addEventListener("click",function(){
   bookStatus.checked = false;
   bookFave.checked = false;
   bookWindow.style.visibility = "visible";
+  disableButton(true);
 })
 
 exitBtn.addEventListener("click",function(){
   bookWindow.style.visibility = "hidden";
+  disableButton(false);
 })
 
 populateFromStorage();

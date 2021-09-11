@@ -68,7 +68,7 @@ tr {
     transition: background-color .15s;
 }
 
-#exit-window {
+#exit-button {
     display: inline;
     margin: 0px;
     width: 40px;
@@ -82,12 +82,12 @@ tr {
     border-radius: 1px 10px;
 }
 
-#exit-window:not(:hover) {
+#exit-button:not(:hover) {
     background-color: rgb(255, 64, 80, 0);
     transition: background-color .15s;
 }
 
-#exit-window:hover {
+#exit-button:hover {
     background-color: rgba(255, 64, 80);
     transition: background-color .15s;
 }
