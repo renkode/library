@@ -30,19 +30,22 @@ body {
 
 #search-bar {
     width: 300px;
+    height: 26px;
+    font-size: 14px;
 }
 
 #sort-by {
+    height: 32px;
     width: 100px;
     background-color: white;
     border: 1px solid rgb(145, 145, 145);
     border-radius: 2px;
-    padding: 2px;
+    font-size: 14px;
 }
 
 #new-book-button {
     width: 100px;
-    height: 30px;
+    height: 32px;
     background-color: #2cb6ec;
     border: 0px;
     border-radius: 4px;
