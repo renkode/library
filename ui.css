@@ -44,12 +44,13 @@ body {
 }
 
 #new-book-button {
-    width: 100px;
+    width: 120px;
     height: 32px;
     background-color: #2cb6ec;
     border: 0px;
     border-radius: 4px;
     color: white;
+    font-size: 15px;
     font-weight: bold;
 }
 
