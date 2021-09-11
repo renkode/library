@@ -1,40 +1,49 @@
 let bookWindow = document.querySelector(".book-window");
+let bookWindowTitle = document.querySelector(".book-window-title");
 let bookForm = document.getElementById("book-form");
 let bookTitle = document.getElementById("book-title");
 let bookAuthor= document.getElementById("book-author");
 let bookPages = document.getElementById("book-pages");
 let bookStatus = document.getElementById("book-status");
 let bookFave = document.getElementById("book-fave");
-let addBookBtn = document.getElementById("add-book-button");
+let submitBtn = document.getElementById("add-book-button");
 let bookList = document.getElementById("book-list");
 let sortMenu = document.getElementById("sort-by");
 let newBookBtn = document.getElementById("new-book-button");
 let exitBtn = document.getElementById("exit-window");
+let targetIndex;
 let myLibrary = [];
 
 function Book(title, author, pages, status, fave){
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.status = status;
-    this.fave = fave;
-  }
-  
-/*Book.prototype.info = function() {
-      return `${this.title} by ${this.author}, ${this.pages} pages, ${this.status}`;
-}*/
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+  this.status = status;
+  this.fave = fave;
+}
 
-function addBookToLibrary(book) {
-  myLibrary.push(book);
-  createRow(book);
+Book.prototype.updateBook = function(title, author, pages, status, fave){
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+  this.status = status;
+  this.fave = fave;
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
 function populateFromStorage(){
   var library = JSON.parse(window.localStorage.getItem("library"));
   for (var book of library) {
-    addBookToLibrary(book);
+    // dunno a better way of preserving prototype functions lol
+    let cloneBook = new Book(book.title,book.author,book.pages,book.status,book.fave);
+    addBookToLibrary(cloneBook);
   }
+}
+
+function addBookToLibrary(book) {
+  myLibrary.push(book);
+  createRow(book);
+  window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
 let removeBook = function(e) {
@@ -101,10 +110,29 @@ function createRow(book) {
     faveBtn.addEventListener("click", toggleFave);
     book.fave ? heart.className = "fas fa-heart" : heart.className = "far fa-heart";
 
-    var remove = document.createElement("td");
+    var actions = document.createElement("td");
+    var editBtn = document.createElement("BUTTON");
+    editBtn.innerHTML = "Edit";
+    editBtn.className = "edit-button";
+    editBtn.addEventListener("click",function(e){
+      bookWindowTitle.innerHTML = "Edit Book";
+      bookWindow.style.visibility = "visible";
+      var books = Array.from(bookList.childNodes);
+      books.splice(0,2);
+      var bookRow = e.target.parentNode.parentNode;
+      targetIndex = Array.prototype.indexOf.call(books, bookRow);
+      bookTitle.value = myLibrary[targetIndex].title;
+      bookAuthor.value = myLibrary[targetIndex].author;
+      bookPages.value = myLibrary[targetIndex].pages;
+      bookStatus.checked = myLibrary[targetIndex].status;
+      bookFave.checked = myLibrary[targetIndex].fave;
+    })
+
     var removeBtn = document.createElement("BUTTON");
-    removeBtn.innerHTML = "Remove";
+    var trash = document.createElement("i");
+    removeBtn.className = "remove-button";
     removeBtn.addEventListener("click",removeBook);
+    trash.className = "fas fa-trash-alt";
 
     bookList.appendChild(newRow);
     newRow.appendChild(title);
@@ -115,8 +143,22 @@ function createRow(book) {
     newRow.appendChild(fave)
     newRow.lastChild.appendChild(faveBtn);
     newRow.lastChild.lastChild.appendChild(heart);
-    newRow.appendChild(remove)
+    newRow.appendChild(actions)
+    newRow.lastChild.appendChild(editBtn);
     newRow.lastChild.appendChild(removeBtn);
+    newRow.lastChild.lastChild.appendChild(trash);
+}
+
+function updateRow(index) {
+  // ugliest code i've ever written
+  var books = Array.from(bookList.childNodes);
+  books.splice(0,2);
+  books[index].childNodes[0].innerHTML = myLibrary[index].title;
+  books[index].childNodes[1].innerHTML = myLibrary[index].author;
+  books[index].childNodes[2].innerHTML = myLibrary[index].pages;
+  books[index].childNodes[3].lastChild.innerHTML = myLibrary[index].status ? "Completed" : "In progress";
+  myLibrary[index].status ? books[index].childNodes[3].lastChild.className = "completed": books[index].childNodes[3].lastChild.className = "in-progress";
+  myLibrary[index].fave ? books[index].childNodes[4].lastChild.lastChild.className = "fas fa-heart": books[index].childNodes[4].lastChild.lastChild.className = "far fa-heart";
 }
 
 function filter(names, index, letter) {
@@ -164,8 +206,14 @@ function sortBy(type) {
 }
 
 bookForm.addEventListener("submit", function() {
-  let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
-  addBookToLibrary(newBook);
+  if (bookWindowTitle.innerHTML === "Add Book") {
+    let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
+    addBookToLibrary(newBook);
+  } else {
+    myLibrary[targetIndex].updateBook(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
+    updateRow(targetIndex);
+    bookWindow.style.visibility = "hidden";
+  }
 });
 
 sortMenu.addEventListener("change",function(e){
@@ -173,6 +221,12 @@ sortMenu.addEventListener("change",function(e){
 })
 
 newBookBtn.addEventListener("click",function(){
+  bookWindowTitle.innerHTML = "Add Book";
+  bookTitle.value = "";
+  bookAuthor.value = "";
+  bookPages.value = "";
+  bookStatus.checked = false;
+  bookFave.checked = false;
   bookWindow.style.visibility = "visible";
 })
 
