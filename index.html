@@ -2,20 +2,26 @@
 <html>
     <head>
         <link rel="stylesheet" href="ui.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet"> 
         <script src="https://kit.fontawesome.com/e09d9d3a54.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        <h1>Your Personal Library</h1>
+        <h1 id="header">My Library<i class="far fa-bookmark"></i></h1>
         <div class="book-window">
             <button id="exit-button">X</button>
             <h1 class="book-window-title">Add Book</h1>
             <form id="book-form" onsubmit="return false">
+                <span><b>Title:</b></span>
                 <label for="title"></label>
-                <input type="text" id="book-title" name="title" placeholder="Title" required>
+                <input type="text" id="book-title" name="title" required>
+                <span><b>Author:</b></span>
                 <label for="author"></label>
-                <input type="text" id="book-author" name="author" placeholder="Author" required>
+                <input type="text" id="book-author" name="author" required>
+                <span><b>Number of pages:</b></span>
                 <label for="pages"></label>
-                <input type="number" id="book-pages" name="pages" placeholder="Pages" required>
+                <input type="number" id="book-pages" name="pages" required>
                 <div class="checkboxes">
                     <input type="checkbox" id="book-status" name="status" value="read">
                     <label for="status">Completed</label>
@@ -26,16 +32,18 @@
             </form>
         </div>
         <div class="container">
-            <input type="text" id="myInput" onkeyup="searchBooks()" placeholder="Search by title">
-            <label for="filter">Sort by:</label>
-            <select name="sort-by" id="sort-by">
-                <option value="title" selected>Title</option>
-                <option value="author">Author</option>
-                <option value="pages">Pages</option>
-                <option value="status">Status</option>
-                <option value="fave">Faves</option>
-            </select> 
-            <button id="new-book-button">+ New Book</button>
+            <div class="list-actions">
+                <input type="text" id="search-bar" onkeyup="searchBooks()" placeholder="Search by title">
+                <label for="filter">Sort by:</label>
+                <select name="sort-by" id="sort-by">
+                    <option value="title" selected>Title</option>
+                    <option value="author">Author</option>
+                    <option value="pages">Pages</option>
+                    <option value="status">Status</option>
+                    <option value="fave">Faves</option>
+                </select> 
+                <button id="new-book-button">+ New Book</button>
+            </div>
             <table id="book-list">
                 <tr>
                     <th>Title</th>

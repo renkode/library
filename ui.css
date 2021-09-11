@@ -1,13 +1,63 @@
 html {
-    font-family: sans-serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
-table {
+body {
+    position: absolute;
+    top: 8%;
+    left: 0;
+    right: 0;
     width: 800px;
+    margin: auto;
 }
 
-tr {
-    text-align: left;
+#header {
+    font-size: 40px;
+}
+
+.fa-bookmark {
+    font-size: 30px;
+    margin-left: 15px;
+}
+
+.list-actions {
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#search-bar {
+    width: 300px;
+}
+
+#sort-by {
+    width: 100px;
+    background-color: white;
+    border: 1px solid rgb(145, 145, 145);
+    border-radius: 2px;
+    padding: 2px;
+}
+
+#new-book-button {
+    width: 100px;
+    height: 30px;
+    background-color: #2cb6ec;
+    border: 0px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}
+
+#new-book-button:not(:hover) {
+    background-color: #2cb6ec;
+    transition: background-color .15s;
+}
+
+#new-book-button:hover {
+    background-color: #148dd3;
+    transition: background-color .15s;
 }
 
 .book-window {
@@ -15,7 +65,7 @@ tr {
     left: 0;
     right: 0;
     width: 350px;
-    height: 300px;
+    height: 400px;
     margin: auto;
     background-color: #383838;
     display: flex;
@@ -23,13 +73,41 @@ tr {
     justify-content: center;
     align-content: center;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgb(0,0,0,0.8);
+    box-shadow: 0px 0px 5px rgb(0,0,0,0.8);
     color: white;
     visibility: hidden;
 }
 
 .fade-in {
+	opacity: 1;
+	animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-duration: 0.1s;
+}
 
+.fade-out {
+	opacity: 0;
+	animation-name: fadeOutOpacity;
+	animation-iteration-count: 1;
+	animation-duration: 0.1s;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOutOpacity {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
 }
 
 .book-window-title {
@@ -46,6 +124,10 @@ tr {
     row-gap: 4px;
 }
 
+#book-title, #book-author, #book-pages {
+    margin-bottom: 4px;
+}
+
 #add-book-button {
     margin-top: 20px;
     width: 50%;
@@ -55,6 +137,7 @@ tr {
     border: 0px;
     border-radius: 4px;
     color: white;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -92,24 +175,24 @@ tr {
     transition: background-color .15s;
 }
 
-#new-book-button {
-    width: 100px;
-    height: 30px;
-    background-color: #2cb6ec;
-    border: 0px;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
+table {
+    width: 100%;
+    border-spacing: 20px;
+    border-collapse: collapse;
 }
 
-#new-book-button:not(:hover) {
-    background-color: #2cb6ec;
-    transition: background-color .15s;
+tr {
+    text-align: left;
 }
 
-#new-book-button:hover {
-    background-color: #148dd3;
-    transition: background-color .15s;
+th {
+    border-bottom: 1px solid rgb(172, 172, 172);
+    margin-bottom: 4px;
+    padding: 4px 0px;
+}
+
+td {
+    padding-top: 10px;
 }
 
 .completed {

@@ -76,13 +76,11 @@ let toggleFave = function(e){
   var book = myLibrary[index];
   book.fave = !book.fave;
   book.fave ? e.target.lastChild.className = "fas fa-heart faved" : e.target.lastChild.className = "far fa-heart faved";
-  e.target.lastChild.addEventListener('transitionend', removeTransition);
+  e.target.lastChild.addEventListener('transitionend', function(e) {
+    if (e.propertyName !== 'transform') return;
+    this.classList.remove('faved');
+  });
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
-}
-
-function removeTransition(e) {
-  if (e.propertyName !== 'transform') return; // skip it if it's not a transform
-  this.classList.remove('faved');
 }
 
 function disableButton(bool) {
@@ -125,6 +123,7 @@ function createRow(book) {
     editBtn.addEventListener("click",function(e){
       bookWindowTitle.innerHTML = "Edit Book";
       bookWindow.style.visibility = "visible";
+      bookWindow.classList.add("fade-in");
       var books = Array.from(bookList.childNodes);
       books.splice(0,2);
       var bookRow = e.target.parentNode.parentNode;
@@ -158,7 +157,7 @@ function createRow(book) {
 }
 
 function updateRow(index) {
-  // ugliest code i've ever written
+  // ugliest code I've ever written
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
   books[index].childNodes[0].innerHTML = myLibrary[index].title;
@@ -213,6 +212,14 @@ function sortBy(type) {
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
+bookWindow.addEventListener('animationend', function() {
+  bookWindow.classList.remove('fade-in');
+  if (bookWindow.classList.contains("fade-out")) {
+    bookWindow.classList.remove('fade-out');
+    bookWindow.style.visibility = "hidden";
+  }
+});
+
 bookForm.addEventListener("submit", function() {
   if (bookWindowTitle.innerHTML === "Add Book") {
     let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
@@ -221,7 +228,7 @@ bookForm.addEventListener("submit", function() {
     myLibrary[targetIndex].updateBook(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
     updateRow(targetIndex);
   }
-  bookWindow.style.visibility = "hidden";
+  bookWindow.classList.add("fade-out");
   disableButton(false);
 });
 
@@ -237,11 +244,12 @@ newBookBtn.addEventListener("click",function(){
   bookStatus.checked = false;
   bookFave.checked = false;
   bookWindow.style.visibility = "visible";
+  bookWindow.classList.add("fade-in");
   disableButton(true);
 })
 
 exitBtn.addEventListener("click",function(){
-  bookWindow.style.visibility = "hidden";
+  bookWindow.classList.add("fade-out");
   disableButton(false);
 })
 
