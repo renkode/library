@@ -83,7 +83,7 @@ let toggleFave = function(e){
   window.localStorage.setItem("library",JSON.stringify(myLibrary));
 }
 
-function disableButton(bool) {
+function disableButtons(bool) {
   var buttons = document.querySelectorAll("button");
   for (var button of buttons) {
     if (button.id === "add-book-button" || button.id === "exit-button") continue;
@@ -133,6 +133,7 @@ function createRow(book) {
       bookPages.value = myLibrary[targetIndex].pages;
       bookStatus.checked = myLibrary[targetIndex].status;
       bookFave.checked = myLibrary[targetIndex].fave;
+      disableButtons(true);
     })
 
     var removeBtn = document.createElement("BUTTON");
@@ -229,7 +230,7 @@ bookForm.addEventListener("submit", function() {
     updateRow(targetIndex);
   }
   bookWindow.classList.add("fade-out");
-  disableButton(false);
+  disableButtons(false);
 });
 
 sortMenu.addEventListener("change",function(e){
@@ -245,12 +246,12 @@ newBookBtn.addEventListener("click",function(){
   bookFave.checked = false;
   bookWindow.style.visibility = "visible";
   bookWindow.classList.add("fade-in");
-  disableButton(true);
+  disableButtons(true);
 })
 
 exitBtn.addEventListener("click",function(){
   bookWindow.classList.add("fade-out");
-  disableButton(false);
+  disableButtons(false);
 })
 
 populateFromStorage();
