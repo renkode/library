@@ -2,10 +2,13 @@
 <html>
     <head>
         <link rel="stylesheet" href="ui.css">
+        <script src="https://kit.fontawesome.com/e09d9d3a54.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        <h1>Library Tracker</h1>
-        <div class="container">
+        <h1>Your Personal Library</h1>
+        <div class="book-window">
+            <button id="exit-window">X</button>
+            <h1 class="book-window-label">Add Book</h1>
             <form id="book-form" onsubmit="return false">
                 <label for="title"></label>
                 <input type="text" id="book-title" name="title" placeholder="Title" required>
@@ -13,12 +16,16 @@
                 <input type="text" id="book-author" name="author" placeholder="Author" required>
                 <label for="pages"></label>
                 <input type="number" id="book-pages" name="pages" placeholder="Pages" required>
-                <input type="checkbox" id="book-status" name="status" value="read">
-                <label for="status">Completed</label>
-                <input type="checkbox" id="book-fave" name="fave" value="fave">
-                <label for="fave">Fave</label>
+                <div class="checkboxes">
+                    <input type="checkbox" id="book-status" name="status" value="read">
+                    <label for="status">Completed</label>
+                    <input type="checkbox" id="book-fave" name="fave" value="fave">
+                    <label for="fave">Favorite</label>
+                </div>
                 <input type="submit" id="add-book-button" value="Add Book">
             </form>
+        </div>
+        <div class="container">
             <input type="text" id="myInput" onkeyup="searchBooks()" placeholder="Search by title">
             <label for="filter">Sort by:</label>
             <select name="sort-by" id="sort-by">
@@ -28,6 +35,7 @@
                 <option value="status">Status</option>
                 <option value="fave">Faves</option>
             </select> 
+            <button id="new-book-button">+ New Book</button>
             <table id="book-list">
                 <tr>
                     <th>Title</th>
