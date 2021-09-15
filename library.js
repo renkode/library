@@ -12,75 +12,80 @@ let sortMenu = document.getElementById("sort-by");
 let newBookBtn = document.getElementById("new-book-button");
 let exitBtn = document.getElementById("exit-button");
 let targetIndex;
-let myLibrary = [];
 
-function Book(title, author, pages, status, fave){
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.status = status;
-  this.fave = fave;
-}
-
-Book.prototype.updateBook = function(title, author, pages, status, fave){
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.status = status;
-  this.fave = fave;
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
-}
-
-function populateFromStorage(){
-  var library = JSON.parse(window.localStorage.getItem("library"));
-  for (var book of library) {
-    // dunno a better way of preserving prototype functions lol
-    let cloneBook = new Book(book.title,book.author,book.pages,book.status,book.fave);
-    addBookToLibrary(cloneBook);
+class Book {
+  constructor (title, author, pages, status, fave){
+    this.title = title;
+    this.author = author;
+    this.pages = parseInt(pages);
+    this.status = status;
+    this.fave = fave;
   }
 }
 
-function addBookToLibrary(book) {
-  myLibrary.push(book);
-  createRow(book);
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+class Library {
+  constructor () {
+    this.books = [];
+  }
+
+  populateFromStorage(){
+    var library = JSON.parse(window.localStorage.getItem("library"));
+    for (var book of library) {
+      // dunno a better way of preserving prototype functions lol
+      // ^ not necessary now that I've refactored this code, but I'll keep it for personal ref
+      let cloneBook = new Book(book.title,book.author,book.pages,book.status,book.fave);
+      this.addBook(cloneBook);
+    }
+  }
+
+  addBook(book) {
+    this.books.push(book);
+    createRow(book);
+    window.localStorage.setItem("library",JSON.stringify(this.books));
+  }
+
+  removeBook(book) {
+    this.books.splice(this.books.indexOf(book), 1);
+    window.localStorage.setItem("library",JSON.stringify(this.books));
+  }
+
+  updateBook = function(book, title, author, pages, status, fave){
+    book.title = title;
+    book.author = author;
+    book.pages = pages;
+    book.status = status;
+    book.fave = fave;
+    window.localStorage.setItem("library",JSON.stringify(this.books));
+  }
 }
 
-let removeBook = function(e) {
+// DOM functions
+
+const toggleStatus = function(e){
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
   var bookRow = e.target.parentNode.parentNode;
   var index = Array.prototype.indexOf.call(books, bookRow);
-  bookList.removeChild(bookRow);
-  myLibrary.splice(index, 1);
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
-}
-
-let toggleStatus = function(e){
-  var books = Array.from(bookList.childNodes);
-  books.splice(0,2);
-  var bookRow = e.target.parentNode.parentNode;
-  var index = Array.prototype.indexOf.call(books, bookRow);
-  var book = myLibrary[index];
+  var book = library.books[index];
   book.status = !book.status;
   e.target.innerHTML = book.status ? "Completed" : "In progress";
   book.status ? e.target.className = "completed": e.target.className = "in-progress";
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+  window.localStorage.setItem("library",JSON.stringify(library.books));
 }
 
-let toggleFave = function(e){
+const toggleFave = function(e){
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
   var bookRow = e.target.parentNode.parentNode;
   var index = Array.prototype.indexOf.call(books, bookRow);
-  var book = myLibrary[index];
+  var book = library.books[index];
   book.fave = !book.fave;
   book.fave ? e.target.lastChild.className = "fas fa-heart faved" : e.target.lastChild.className = "far fa-heart faved";
   e.target.lastChild.addEventListener('transitionend', function(e) {
     if (e.propertyName !== 'transform') return;
     this.classList.remove('faved');
   });
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+  window.localStorage.setItem("library",JSON.stringify(library.books));
 }
 
 function disableButtons(bool) {
@@ -128,18 +133,18 @@ function createRow(book) {
       books.splice(0,2);
       var bookRow = e.target.parentNode.parentNode;
       targetIndex = Array.prototype.indexOf.call(books, bookRow);
-      bookTitle.value = myLibrary[targetIndex].title;
-      bookAuthor.value = myLibrary[targetIndex].author;
-      bookPages.value = myLibrary[targetIndex].pages;
-      bookStatus.checked = myLibrary[targetIndex].status;
-      bookFave.checked = myLibrary[targetIndex].fave;
+      bookTitle.value = library.books[targetIndex].title;
+      bookAuthor.value = library.books[targetIndex].author;
+      bookPages.value = library.books[targetIndex].pages;
+      bookStatus.checked = library.books[targetIndex].status;
+      bookFave.checked = library.books[targetIndex].fave;
       disableButtons(true);
     })
 
     var removeBtn = document.createElement("BUTTON");
     var trash = document.createElement("i");
     removeBtn.className = "remove-button";
-    removeBtn.addEventListener("click",removeBook);
+    removeBtn.addEventListener("click",removeRow);
     trash.className = "fas fa-trash-alt";
 
     bookList.appendChild(newRow);
@@ -157,16 +162,25 @@ function createRow(book) {
     newRow.lastChild.lastChild.appendChild(trash);
 }
 
+const removeRow = function(e) {
+  var books = Array.from(bookList.childNodes);
+  books.splice(0,2);
+  var bookRow = e.target.parentNode.parentNode;
+  var index = Array.prototype.indexOf.call(books, bookRow);
+  bookList.removeChild(bookRow);
+  library.removeBook(library.books[index]);
+}
+
 function updateRow(index) {
   // ugliest code I've ever written
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
-  books[index].childNodes[0].innerHTML = myLibrary[index].title;
-  books[index].childNodes[1].innerHTML = myLibrary[index].author;
-  books[index].childNodes[2].innerHTML = myLibrary[index].pages;
-  books[index].childNodes[3].lastChild.innerHTML = myLibrary[index].status ? "Completed" : "In progress";
-  myLibrary[index].status ? books[index].childNodes[3].lastChild.className = "completed": books[index].childNodes[3].lastChild.className = "in-progress";
-  myLibrary[index].fave ? books[index].childNodes[4].lastChild.lastChild.className = "fas fa-heart": books[index].childNodes[4].lastChild.lastChild.className = "far fa-heart";
+  books[index].childNodes[0].innerHTML = library.books[index].title;
+  books[index].childNodes[1].innerHTML = library.books[index].author;
+  books[index].childNodes[2].innerHTML = library.books[index].pages;
+  books[index].childNodes[3].lastChild.innerHTML = library.books[index].status ? "Completed" : "In progress";
+  library.books[index].status ? books[index].childNodes[3].lastChild.className = "completed": books[index].childNodes[3].lastChild.className = "in-progress";
+  library.books[index].fave ? books[index].childNodes[4].lastChild.lastChild.className = "fas fa-heart": books[index].childNodes[4].lastChild.lastChild.className = "far fa-heart";
 }
 
 function filter(names, index, letter) {
@@ -180,10 +194,10 @@ function searchBooks(){
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
   var input, filter, title;
-  input = document.getElementById('myInput');
+  input = document.getElementById('search-bar');
   filter = input.value.toUpperCase();
   for (i = 0; i < books.length; i++) {
-    title = myLibrary[i].title;
+    title = library.books[i].title;
     if (title.toUpperCase().indexOf(filter) > -1) {
       books[i].style.display = "";
     } else {
@@ -195,23 +209,25 @@ function searchBooks(){
 function sortBy(type) {
   var books = Array.from(bookList.childNodes);
   books.splice(0,2);
-  var sortedBooks = myLibrary.sort(function(a, b) {
-    var indexA = myLibrary.indexOf(a);
-    var indexB = myLibrary.indexOf(b);
+  var sortedBooks = library.books.sort(function(a, b) {
+    var indexA = library.books.indexOf(a);
+    var indexB = library.books.indexOf(b);
     if (type === "status" || type === "fave" || type === "pages") {
-      return myLibrary[indexA][type] < myLibrary[indexB][type] ? 1 : -1;  
+      return library.books[indexA][type] < library.books[indexB][type] ? 1 : -1;  
     } else {
-      return myLibrary[indexA][type] > myLibrary[indexB][type] ? 1 : -1;  
+      return library.books[indexA][type] > library.books[indexB][type] ? 1 : -1;  
     }
     });
   // refresh list
-  myLibrary = sortedBooks;
+  library.books = sortedBooks;
   books.forEach(book => bookList.removeChild(book));
   for (var book of sortedBooks) {
     createRow(book);
   }
-  window.localStorage.setItem("library",JSON.stringify(myLibrary));
+  window.localStorage.setItem("library",JSON.stringify(library.books));
 }
+
+// event listeners
 
 bookWindow.addEventListener('animationend', function() {
   bookWindow.classList.remove('fade-in');
@@ -224,9 +240,9 @@ bookWindow.addEventListener('animationend', function() {
 bookForm.addEventListener("submit", function() {
   if (bookWindowTitle.innerHTML === "Add Book") {
     let newBook = new Book(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
-    addBookToLibrary(newBook);
+    library.addBook(newBook);
   } else {
-    myLibrary[targetIndex].updateBook(bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
+    library.updateBook(library.books[targetIndex], bookTitle.value, bookAuthor.value, bookPages.value, bookStatus.checked, bookFave.checked);
     updateRow(targetIndex);
   }
   bookWindow.classList.add("fade-out");
@@ -241,7 +257,7 @@ newBookBtn.addEventListener("click",function(){
   bookWindowTitle.innerHTML = "Add Book";
   bookTitle.value = "";
   bookAuthor.value = "";
-  bookPages.value = "";
+  bookPages.value = 0;
   bookStatus.checked = false;
   bookFave.checked = false;
   bookWindow.style.visibility = "visible";
@@ -254,4 +270,5 @@ exitBtn.addEventListener("click",function(){
   disableButtons(false);
 })
 
-populateFromStorage();
+let library = new Library();
+library.populateFromStorage();
